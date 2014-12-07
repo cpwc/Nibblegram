@@ -424,7 +424,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     } else if (i == notificationRow) {
                         presentFragment(new NotificationsSettingsActivity());
                     } else if (i == backgroundRow) {
-                        presentFragment(new WallpapersActivity());
+                        presentFragment(new WallpapersActivity(new Bundle()));
                     } else if (i == askQuestionRow) {
                         if (getParentActivity() == null) {
                             return;

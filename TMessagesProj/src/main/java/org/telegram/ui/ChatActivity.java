@@ -126,6 +126,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private TextView bottomOverlayText;
     private TextView secretViewStatusTextView;
     private TextView selectedMessagesCountTextView;
+    private View contentView;
 
     private MessageObject selectedObject;
     private MessageObject forwaringMessage;
@@ -202,6 +203,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private final static int clear_history = 11;
     private final static int delete_chat = 12;
     private final static int share_contact = 13;
+    private final static int change_wallpaper = 14;
 
     AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -434,6 +436,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (currentEncryptedChat != null && AndroidUtilities.getMyLayerVersion(currentEncryptedChat.layer) != SecretChatHelper.CURRENT_SECRET_CHAT_LAYER) {
             SecretChatHelper.getInstance().sendNotifyLayerMessage(currentEncryptedChat, null);
         }
+
+        updateChatBackground();
 
         return true;
     }
@@ -723,6 +727,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                             showAlertDialog(builder);
                         }
+                    } else if (id == change_wallpaper) {
+                        Bundle args = new Bundle();
+                        if (currentChat != null) {
+                            args.putInt("wallpaper_id", currentChat.id);
+                        } else  if (currentUser != null) {
+                            args.putInt("wallpaper_id", currentUser.id);
+                        }
+                        presentFragment(new WallpapersActivity(args));
                     }
                 }
             });
@@ -864,6 +876,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             } else {
                 headerItem.addSubItem(delete_chat, LocaleController.getString("DeleteChatUser", R.string.DeleteChatUser), 0);
             }
+            headerItem.addSubItem(change_wallpaper, LocaleController.getString("ChangeWallpaper", R.string.ChangeWallpaper), 0);
 
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) headerItem.getLayoutParams();
             layoutParams.rightMargin = AndroidUtilities.dp(-48);
@@ -926,7 +939,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             fragmentView = inflater.inflate(R.layout.chat_layout, container, false);
 
-            View contentView = fragmentView.findViewById(R.id.chat_layout);
+            contentView = fragmentView.findViewById(R.id.chat_layout);
             TextView emptyView = (TextView) fragmentView.findViewById(R.id.searchEmptyView);
             emptyViewContainer = fragmentView.findViewById(R.id.empty_view);
             emptyViewContainer.setVisibility(View.INVISIBLE);
@@ -950,47 +963,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             updateContactStatus();
 
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-            int selectedBackground = preferences.getInt("selectedBackground", 1000001);
-            int selectedColor = preferences.getInt("selectedColor", 0);
-            if (selectedColor != 0) {
-                contentView.setBackgroundColor(selectedColor);
-                chatListView.setCacheColorHint(selectedColor);
-            } else {
-                chatListView.setCacheColorHint(0);
-                try {
-                    if (ApplicationLoader.cachedWallpaper != null) {
-                        isCustomTheme = selectedBackground != 1000001;
-                        ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(ApplicationLoader.cachedWallpaper);
-                    } else {
-                        if (selectedBackground == 1000001) {
-                            ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
-                            ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
-                        } else {
-                            File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
-                            if (toFile.exists()) {
-                                Drawable drawable = Drawable.createFromPath(toFile.getAbsolutePath());
-                                if (drawable != null) {
-                                    ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(drawable);
-                                    ApplicationLoader.cachedWallpaper = drawable;
-                                } else {
-                                    contentView.setBackgroundColor(-2693905);
-                                    chatListView.setCacheColorHint(-2693905);
-                                }
-                                isCustomTheme = true;
-                            } else {
-                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
-                                ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
-                                isCustomTheme = false;
-                            }
-                        }
-                    }
-                } catch (Throwable e) {
-                    contentView.setBackgroundColor(-2693905);
-                    chatListView.setCacheColorHint(-2693905);
-                    FileLog.e("tmessages", e);
-                }
-            }
+            updateChatBackground();
 
             if (isCustomTheme) {
                 progressViewInner.setBackgroundResource(R.drawable.system_loader2);
@@ -1632,6 +1605,54 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             lastPrintString = printString;
             onlineTextView.setText(printString);
             setTypingAnimation(true);
+        }
+    }
+
+    private void updateChatBackground() {
+        if (contentView == null) {
+            return;
+        }
+
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        int selectedBackground = preferences.getInt("selectedBackground", 1000001);
+        int selectedColor = preferences.getInt("selectedColor", 0);
+        if (selectedColor != 0) {
+            contentView.setBackgroundColor(selectedColor);
+            chatListView.setCacheColorHint(selectedColor);
+        } else {
+            chatListView.setCacheColorHint(0);
+            try {
+//                if (ApplicationLoader.cachedWallpaper != null) {
+//                    isCustomTheme = selectedBackground != 1000001;
+//                    ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(ApplicationLoader.cachedWallpaper);
+//                } else {
+//                    if (selectedBackground == 1000001) {
+//                        ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+//                        ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
+//                    } else {
+                        File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), getWallpaperName());
+                        if (toFile.exists()) {
+                            Drawable drawable = Drawable.createFromPath(toFile.getAbsolutePath());
+                            if (drawable != null) {
+                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(drawable);
+                                ApplicationLoader.cachedWallpaper = drawable;
+                            } else {
+                                contentView.setBackgroundColor(-2693905);
+                                chatListView.setCacheColorHint(-2693905);
+                            }
+                            isCustomTheme = true;
+                        } else {
+                            ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+                            ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
+                            isCustomTheme = false;
+                        }
+//                    }
+//                }
+            } catch (Throwable e) {
+                contentView.setBackgroundColor(-2693905);
+                chatListView.setCacheColorHint(-2693905);
+                FileLog.e("tmessages", e);
+            }
         }
     }
 
@@ -2670,6 +2691,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         chatListView.setOnItemLongClickListener(onItemLongClickListener);
         chatListView.setOnItemClickListener(onItemClickListener);
         chatListView.setLongClickable(true);
+
+        updateChatBackground();
     }
 
     @Override
@@ -3643,6 +3666,16 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
             return count == 0;
+        }
+    }
+
+    private String getWallpaperName() {
+        if (currentChat != null) {
+            return "wallpaper_" + currentChat.id + ".jpg";
+        } else  if (currentUser != null) {
+            return "wallpaper_" + currentUser.id + ".jpg";
+        } else {
+            return "wallpaper.jgp";
         }
     }
 }

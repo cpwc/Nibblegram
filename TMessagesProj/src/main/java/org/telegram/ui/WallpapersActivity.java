@@ -70,12 +70,19 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
     private File loadingFileObject = null;
     private TLRPC.PhotoSize loadingSize = null;
     private String currentPicturePath;
+    private int wallpaperId;
 
     private final static int done_button = 1;
+
+    public WallpapersActivity(Bundle args) {
+        super(args);
+    }
 
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
+
+        wallpaperId = arguments.getInt("wallpaper_id", 0);
 
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.FileDidFailedLoad);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.FileDidLoaded);
@@ -83,7 +90,7 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.wallpapersDidLoaded);
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        selectedBackground = preferences.getInt("selectedBackground", 1000001);
+        //selectedBackground = preferences.getInt("selectedBackground", 1000001);
         selectedColor = preferences.getInt("selectedColor", 0);
         MessagesStorage.getInstance().getWallpapers();
         File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper-temp.jpg");
@@ -125,7 +132,7 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
                             TLRPC.PhotoSize size = FileLoader.getClosestPhotoSizeWithSize(wallPaper.sizes, Math.min(width, height));
                             String fileName = size.location.volume_id + "_" + size.location.local_id + ".jpg";
                             File f = new File(FileLoader.getInstance().getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
-                            File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
+                            File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), getWallpaperName());
                             try {
                                 done = Utilities.copyFile(f, toFile);
                             } catch (Exception e) {
@@ -135,7 +142,7 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
                         } else {
                             if (selectedBackground == -1) {
                                 File fromFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper-temp.jpg");
-                                File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
+                                File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), getWallpaperName());
                                 done = fromFile.renameTo(toFile);
                             } else {
                                 done = true;
@@ -319,7 +326,7 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
             } else if (selectedBackground == -1) {
                 File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper-temp.jpg");
                 if (!toFile.exists()) {
-                    toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
+                    toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), getWallpaperName());
                 }
                 if (toFile.exists()) {
                     backgroundImage.setImageURI(Uri.fromFile(toFile));
@@ -575,5 +582,13 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
         public boolean isEmpty() {
             return false;
         }
+    }
+
+    private String getWallpaperName() {
+        if (wallpaperId != 0) {
+            return "wallpaper_" + wallpaperId + ".jpg";
+        }
+
+        return "wallpaper.jpg";
     }
 }

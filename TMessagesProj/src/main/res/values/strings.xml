@@ -3,7 +3,7 @@
 
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Nibblegram</string>
     <string name="LanguageName">English</string>
     <string name="LanguageNameInEnglish">English</string>
     <string name="LanguageCode">en</string>
@@ -44,6 +44,7 @@
     <string name="EncryptionProcessing">Exchanging encryption keys...</string>
     <string name="EncryptedChatStartedOutgoing">%s joined your secret chat.</string>
     <string name="EncryptedChatStartedIncoming">You joined the secret chat.</string>
+    <string name="ChangeWallpaper">Change wallpaper</string>
     <string name="ClearHistory">Clear history</string>
     <string name="DeleteChat">Delete and exit</string>
     <string name="DeleteChatUser">Delete chat</string>
