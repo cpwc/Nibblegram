@@ -1642,9 +1642,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             }
                             isCustomTheme = true;
                         } else {
-                            ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
-                            ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
-                            isCustomTheme = false;
+                            toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
+                            Drawable drawable = Drawable.createFromPath(toFile.getAbsolutePath());
+                            if (drawable != null) {
+                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(drawable);
+                                ApplicationLoader.cachedWallpaper = drawable;
+                            } else {
+                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+                                ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
+                                isCustomTheme = false;
+                            }
+                            isCustomTheme = true;
                         }
 //                    }
 //                }
@@ -3680,7 +3688,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         } else  if (currentUser != null) {
             return "wallpaper_" + currentUser.id + ".jpg";
         } else {
-            return "wallpaper.jgp";
+            return "wallpaper.jpg";
         }
     }
 }

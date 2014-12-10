@@ -125,7 +125,7 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
                     } else if (id == done_button) {
                         boolean done;
                         TLRPC.WallPaper wallPaper = wallpappersByIds.get(selectedBackground);
-                        if (wallPaper != null && wallPaper.id != 1000001 && wallPaper instanceof TLRPC.TL_wallPaper) {
+                        if (wallPaper != null && wallPaper instanceof TLRPC.TL_wallPaper) {
                             int width = AndroidUtilities.displaySize.x;
                             int height = AndroidUtilities.displaySize.y;
                             if (width > height) {
