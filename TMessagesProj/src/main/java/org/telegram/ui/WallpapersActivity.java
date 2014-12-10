@@ -90,7 +90,11 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.wallpapersDidLoaded);
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        //selectedBackground = preferences.getInt("selectedBackground", 1000001);
+        if (wallpaperId == 0) {
+            selectedBackground = preferences.getInt("selectedBackground", 1000001);
+        } else {
+            selectedBackground = preferences.getInt("selectedBackground_" + wallpaperId, 1000001);
+        }
         selectedColor = preferences.getInt("selectedColor", 0);
         MessagesStorage.getInstance().getWallpapers();
         File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper-temp.jpg");
@@ -152,7 +156,11 @@ public class WallpapersActivity extends BaseFragment implements NotificationCent
                         if (done) {
                             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putInt("selectedBackground", selectedBackground);
+                            if (wallpaperId == 0) {
+                                editor.putInt("selectedBackground", selectedBackground);
+                            } else {
+                                editor.putInt("selectedBackground_" + wallpaperId, selectedBackground);
+                            }
                             editor.putInt("selectedColor", selectedColor);
                             editor.commit();
                             ApplicationLoader.cachedWallpaper = null;
