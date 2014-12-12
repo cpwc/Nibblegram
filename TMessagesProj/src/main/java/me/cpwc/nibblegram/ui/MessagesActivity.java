@@ -30,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
+
 import me.cpwc.nibblegram.android.AndroidUtilities;
 import me.cpwc.nibblegram.android.LocaleController;
 import me.cpwc.nibblegram.android.MessageObject;
@@ -63,7 +65,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private View searchEmptyView;
     private View progressView;
     private View emptyView;
-    private ImageView floatingButton;
+    //private ImageView floatingButton;
+    private FloatingActionButton floatingActionButton;
     private int prevPosition;
     private int prevTop;
     private boolean scrollUpdated;
@@ -132,6 +135,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     public View createView(LayoutInflater inflater, ViewGroup container) {
         if (fragmentView == null) {
             ActionBarMenu menu = actionBar.createMenu();
+            actionBar.setBackgroundColor(0xff03A9F4);
+
             menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
                 @Override
                 public void onSearchExpand() {
@@ -141,7 +146,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         emptyView.setVisibility(View.GONE);
                         progressView.setVisibility(View.GONE);
                         if (!onlySelect) {
-                            floatingButton.setVisibility(View.GONE);
+                            floatingActionButton.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -162,9 +167,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                             progressView.setVisibility(View.GONE);
                         }
                         if (!onlySelect) {
-                            floatingButton.setVisibility(View.VISIBLE);
+                            floatingActionButton.setVisibility(View.VISIBLE);
                             floatingHidden = true;
-                            ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
+                            ViewProxy.setTranslationY(floatingActionButton, AndroidUtilities.dp(100));
                             hideFloatingButton(false);
                         }
                         if (messagesListView.getAdapter() != dialogsAdapter) {
@@ -271,13 +276,31 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             textView = (TextView)fragmentView.findViewById(R.id.search_empty_text);
             textView.setText(LocaleController.getString("NoResult", R.string.NoResult));
 
-            floatingButton = (ImageView)fragmentView.findViewById(R.id.floating_button);
-            floatingButton.setVisibility(onlySelect ? View.GONE : View.VISIBLE);
-            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)floatingButton.getLayoutParams();
+//            floatingButton = (ImageView)fragmentView.findViewById(R.id.floating_button);
+//            floatingButton.setVisibility(onlySelect ? View.GONE : View.VISIBLE);
+//            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)floatingButton.getLayoutParams();
+//            layoutParams.leftMargin = LocaleController.isRTL ? AndroidUtilities.dp(14) : 0;
+//            layoutParams.rightMargin = LocaleController.isRTL ? 0 : AndroidUtilities.dp(14);
+//            layoutParams.gravity = (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM;
+//            floatingButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Bundle args = new Bundle();
+//                    args.putBoolean("destroyAfterSelect", true);
+//                    presentFragment(new ContactsActivity(args));
+//                }
+//            });
+
+            floatingActionButton = (FloatingActionButton) fragmentView.findViewById(R.id.fab);
+            floatingActionButton.setVisibility(onlySelect ? View.GONE : View.VISIBLE);
+            floatingActionButton.setColorNormal(0xff03A9F4);
+            floatingActionButton.setColorPressed(0xff0288D1);
+            floatingActionButton.attachToListView(messagesListView);
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
             layoutParams.leftMargin = LocaleController.isRTL ? AndroidUtilities.dp(14) : 0;
             layoutParams.rightMargin = LocaleController.isRTL ? 0 : AndroidUtilities.dp(14);
             layoutParams.gravity = (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM;
-            floatingButton.setOnClickListener(new View.OnClickListener() {
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle args = new Bundle();
@@ -467,28 +490,28 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         }
                     }
 
-                    if (floatingButton.getVisibility() != View.GONE) {
-                        final View topChild = absListView.getChildAt(0);
-                        int firstViewTop = 0;
-                        if (topChild != null) {
-                            firstViewTop = topChild.getTop();
-                        }
-                        boolean goingDown;
-                        boolean changed = true;
-                        if (prevPosition == firstVisibleItem) {
-                            final int topDelta = prevTop - firstViewTop;
-                            goingDown = firstViewTop < prevTop;
-                            changed = Math.abs(topDelta) > 1;
-                        } else {
-                            goingDown = firstVisibleItem > prevPosition;
-                        }
-                        if (changed && scrollUpdated) {
-                            hideFloatingButton(goingDown);
-                        }
-                        prevPosition = firstVisibleItem;
-                        prevTop = firstViewTop;
-                        scrollUpdated = true;
-                    }
+//                    if (floatingButton.getVisibility() != View.GONE) {
+//                        final View topChild = absListView.getChildAt(0);
+//                        int firstViewTop = 0;
+//                        if (topChild != null) {
+//                            firstViewTop = topChild.getTop();
+//                        }
+//                        boolean goingDown;
+//                        boolean changed = true;
+//                        if (prevPosition == firstVisibleItem) {
+//                            final int topDelta = prevTop - firstViewTop;
+//                            goingDown = firstViewTop < prevTop;
+//                            changed = Math.abs(topDelta) > 1;
+//                        } else {
+//                            goingDown = firstVisibleItem > prevPosition;
+//                        }
+//                        if (changed && scrollUpdated) {
+//                            hideFloatingButton(goingDown);
+//                        }
+//                        prevPosition = firstVisibleItem;
+//                        prevTop = firstViewTop;
+//                        scrollUpdated = true;
+//                    }
                 }
             });
         } else {
@@ -514,17 +537,17 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!onlySelect && floatingButton != null) {
-            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        if (!onlySelect && floatingActionButton != null) {
+            floatingActionButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
-                    floatingButton.setClickable(!floatingHidden);
-                    if (floatingButton != null) {
+                    ViewProxy.setTranslationY(floatingActionButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
+                    floatingActionButton.setClickable(!floatingHidden);
+                    if (floatingActionButton != null) {
                         if (Build.VERSION.SDK_INT < 16) {
-                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            floatingActionButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         } else {
-                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            floatingActionButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
                     }
                 }
@@ -601,9 +624,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             return;
         }
         floatingHidden = hide;
-        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) : 0).setDuration(300);
+        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingActionButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) : 0).setDuration(300);
         animator.setInterpolator(floatingInterpolator);
-        floatingButton.setClickable(!hide);
+        floatingActionButton.setClickable(!hide);
         animator.start();
     }
 
