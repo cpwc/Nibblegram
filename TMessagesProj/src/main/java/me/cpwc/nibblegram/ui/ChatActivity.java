@@ -92,6 +92,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.concurrent.Semaphore;
 
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, MessagesActivity.MessagesActivityDelegate,
@@ -3465,6 +3466,15 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                         alertUserOpenError(message);
                                     }
                                 } else if (message.type == 4) {
+                                    // open location in map view
+                                    double lat = message.messageOwner.media.geo.lat;
+                                    double lng = message.messageOwner.media.geo._long;
+                                    Uri geo_uri = Uri.parse(String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f",
+                                    lat, lng, lat, lng));
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, geo_uri);
+                                    getParentActivity().startActivity(intent);
+
+                                    // also start internal view if possible
                                     if (!isGoogleMapsInstalled()) {
                                         return;
                                     }
