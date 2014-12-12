@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -398,7 +400,10 @@ public class Emoji {
     }
 
     public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size) {
-        if (cs == null || cs.length() == 0) {
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        boolean systemEmoji = preferences.getBoolean("system_emoji", false);
+
+        if (cs == null || cs.length() == 0 || systemEmoji) {
             return cs;
         }
         Spannable s;
