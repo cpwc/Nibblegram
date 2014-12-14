@@ -29,10 +29,6 @@ android {
     buildToolsVersion '21.1.1'
 
     signingConfigs {
-        debug {
-            storeFile file("config/debug.keystore")
-        }
-
         release {
             storeFile file("config/release.keystore")
             storePassword RELEASE_STORE_PASSWORD
