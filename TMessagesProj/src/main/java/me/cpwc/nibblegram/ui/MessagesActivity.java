@@ -135,8 +135,6 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     public View createView(LayoutInflater inflater, ViewGroup container) {
         if (fragmentView == null) {
             ActionBarMenu menu = actionBar.createMenu();
-            actionBar.setBackgroundColor(0xff03A9F4);
-
             menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
                 @Override
                 public void onSearchExpand() {
@@ -293,8 +291,6 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
             floatingActionButton = (FloatingActionButton) fragmentView.findViewById(R.id.fab);
             floatingActionButton.setVisibility(onlySelect ? View.GONE : View.VISIBLE);
-            floatingActionButton.setColorNormal(0xff03A9F4);
-            floatingActionButton.setColorPressed(0xff0288D1);
             floatingActionButton.attachToListView(messagesListView);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)floatingActionButton.getLayoutParams();
             layoutParams.leftMargin = LocaleController.isRTL ? AndroidUtilities.dp(14) : 0;
@@ -490,7 +486,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         }
                     }
 
-//                    if (floatingButton.getVisibility() != View.GONE) {
+//                    if (floatingActionButton.getVisibility() != View.GONE) {
 //                        final View topChild = absListView.getChildAt(0);
 //                        int firstViewTop = 0;
 //                        if (topChild != null) {

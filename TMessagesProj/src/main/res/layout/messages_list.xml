@@ -87,6 +87,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="14dp"
-        android:src="@drawable/ic_add_white" />
+        android:src="@drawable/ic_add_white"
+        fab:fab_colorNormal="@color/light_blue_700"
+        fab:fab_colorPressed="@color/light_blue_600"
+        fab:fab_colorRipple="@color/light_blue_600"/>
 
 </FrameLayout>
